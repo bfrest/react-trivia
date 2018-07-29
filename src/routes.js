@@ -7,7 +7,7 @@ import Page2 from "./components/Page2/Page2.js";
 
 export default (
   <Switch>
-    <Route path="/" component={App.js} />
-    <Route path="/page2" component={Page2.js} />
+    <Route path="/" component={App} />
+    <Route path="/page2" component={Page2} />
   </Switch>
 );

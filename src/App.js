@@ -2,19 +2,19 @@ import React, { Component } from "react";
 import "./App.css";
 import "./reset.css";
 import axios from "axios";
-//import { Link } from "react-router-dom";
 
 class App extends Component {
   constructor() {
     super();
 
     this.state = {
-      questions: []
+      questions: [],
+      filter: "",
+      filteredList: []
     };
 
     this.handleNextPage = this.handleNextPage.bind(this);
     this.handlePreviousPage = this.handlePreviousPage.bind(this);
-    this.checkAnswer = this.checkAnswer.bind(this);
   }
 
   componentDidMount() {
@@ -32,13 +32,18 @@ class App extends Component {
   }
 
   checkAnswer(currentlySelected, answer, questionId, optionId) {
-    // I needed to add the s in front of the id because they start with numbers and css doesn't allow selectors to start with a number
+    // I needed to add the s in front of the class because they start with numbers and css doesn't allow selectors to start with a number
     let questionWrapper = document.querySelector(`.${questionId}`);
     let currentOption = document.querySelector(`.${optionId}`);
-    //let allOptions = document.querySelectorAll("");
+    let allOptions = document.querySelectorAll(`.${questionId}`);
 
-    // changes the color on the currently selected option
-    currentOption.classList.add("current");
+    // removes the class current from all options then adds the class to the one clicked on
+    for (let i = 0; i < allOptions.length; i++) {
+      if (allOptions[i].classList.contains("current")) {
+        allOptions[i].classList.remove("current");
+      }
+      currentOption.classList.add("current");
+    }
 
     if (currentlySelected === answer) {
       // changes the color on the whole div
@@ -50,10 +55,50 @@ class App extends Component {
     }
   }
 
+  getByDifficulty(num) {
+    axios.get(`https://practiceapi.devmountain.com/api/trivia/questions/difficulty/${num}`).then(res => this.setState({ questions: [...res.data] }));
+  }
+
+  getAllQuestions() {
+    axios.get("https://practiceapi.devmountain.com/api/trivia/questions").then(res => this.setState({ questions: [...res.data] }));
+  }
+
+  showSearch() {
+    const searchBar = document.querySelector(".search");
+
+    searchBar.classList.toggle("showSearch");
+  }
+
+  handleFilter(e) {
+    const { questions, filteredList, filter } = this.state;
+    let word = e.target.value;
+    this.setState({ filter: e.target.value });
+
+    for (let i = 0; i < questions.length; i++) {
+      if (
+        questions[i].options[1].toLowerCase().includes(word) ||
+        questions[i].options[2].toLowerCase().includes(word) ||
+        questions[i].options[3].toLowerCase().includes(word) ||
+        questions[i].options[4].toLowerCase().includes(word)
+      ) {
+        filteredList.push(questions[i]);
+      }
+    }
+  }
+
   render() {
+    let arrayToMap;
+    // if the user searches something it will show the array containing the results if not it will show all the questions
+    if (this.state.filteredList.length > 0) {
+      arrayToMap = [...this.state.filteredList];
+    } else {
+      arrayToMap = [...this.state.questions];
+    }
+
     return (
       <div className="App">
         {console.log(this.state.questions)}
+        {console.log(this.state.filter)}
         <div className="header">
           <div />
           <h1>Trivia Trends</h1>
@@ -63,32 +108,38 @@ class App extends Component {
         </div>
         <article className="main">
           <nav className="navBar">
-            <a>All Questions</a>
-            <a>Easy</a>
-            <a>Medium</a>
-            <a>Hard</a>
-            <a>Search by Animal</a>
+            <a onClick={() => this.getAllQuestions()}>All Questions</a>
+            <a onClick={() => this.getByDifficulty(1)}>Easy</a>
+            <a onClick={() => this.getByDifficulty(2)}>Medium</a>
+            <a onClick={() => this.getByDifficulty(3)}>Hard</a>
+            <a onClick={() => this.showSearch()}>Search by Animal</a>
           </nav>
           <div className="search">
-            <input type="text" placeholder="Animal to search by" />
+            <input type="text" placeholder="Animal to search by" onChange={e => this.handleFilter(e)} />
           </div>
           {/* this maps and displays all the questions that are in state */}
-          {this.state.questions.map(question => {
+          {arrayToMap.map(question => {
             return (
               <div key={question._id} className={`question-wrapper s${question._id}`}>
                 <h3>{question.question}</h3>
 
+                <p className="difficulty">{question.difficulty}</p>
                 <ul>
-                  <li className={`s${question._id}1`} onClick={() => this.checkAnswer(1, question.correct_answer, `s${question._id}`, `s${question._id}1`)}>
+                  {/* on each of the list items I added an s on the front of the class to be able to apply styles to it */}
+
+                  <li className={`s${question._id}1 s${question._id}`} onClick={() => this.checkAnswer(1, question.correct_answer, `s${question._id}`, `s${question._id}1`)}>
                     {question.options[1]}
                   </li>
-                  <li className={`s${question._id}2`} onClick={() => this.checkAnswer(2, question.correct_answer, `s${question._id}`, `s${question._id}2`)}>
+
+                  <li className={`s${question._id}2 s${question._id}`} onClick={() => this.checkAnswer(2, question.correct_answer, `s${question._id}`, `s${question._id}2`)}>
                     {question.options[2]}
                   </li>
-                  <li className={`s${question._id}3`} onClick={() => this.checkAnswer(3, question.correct_answer, `s${question._id}`, `s${question._id}3`)}>
+
+                  <li className={`s${question._id}3 s${question._id}`} onClick={() => this.checkAnswer(3, question.correct_answer, `s${question._id}`, `s${question._id}3`)}>
                     {question.options[3]}
                   </li>
-                  <li className={`s${question._id}4`} onClick={() => this.checkAnswer(4, question.correct_answer, `s${question._id}`, `s${question._id}4`)}>
+
+                  <li className={`s${question._id}4 s${question._id}`} onClick={() => this.checkAnswer(4, question.correct_answer, `s${question._id}`, `s${question._id}4`)}>
                     {question.options[4]}
                   </li>
                 </ul>

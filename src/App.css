@@ -299,7 +299,7 @@ input[type="range"] {
 }
 
 .current {
-  background-color: gray;
+  background-color: rgba(90, 100, 100, 0.7);
 }
 
 .correct {
@@ -308,4 +308,20 @@ input[type="range"] {
 
 .incorrect {
   background: #da2d7b;
+}
+
+.difficulty {
+  margin-left: 100%;
+}
+
+.search {
+  display: none;
+}
+
+.showSearch {
+  display: flex;
+}
+
+.navBar {
+  margin-bottom: 10px;
 }
