@@ -102,25 +102,31 @@ article {
   margin-bottom: 1rem;
   max-width: 78%;
 }
+
 .question-wrapper > div {
   float: right;
   padding: 3px;
   border-radius: 2px;
 }
-div.gear {
+
+.gear {
   height: 1.5rem;
   padding: 0;
   margin-right: 0.25rem;
   cursor: pointer;
+  opacity: 0.85;
   transition: all 0.5s;
 }
-div.gear:hover {
+
+.gear:hover {
   transform: rotate(90deg);
-  opacity: 0.85;
+  opacity: 1;
 }
+
 .gear img {
   height: 100%;
 }
+
 .question-wrapper ul {
   clear: both;
   display: flex;
@@ -159,10 +165,14 @@ input[type="range"] {
   width: 100vw;
   background: rgba(88, 88, 88, 0.55);
   display: flex;
-  display: none; /* ALERTDELETEME - REMOVE THIS line only WHEN STYLING THE MODAL*/
+  display: none; /* ALERT DELETE ME - REMOVE THIS line only WHEN STYLING THE MODAL*/
   justify-content: center;
   align-items: center;
 }
+.openModal {
+  display: flex;
+}
+
 .modal > form {
   background: #eee;
   width: 50%;
@@ -173,6 +183,7 @@ input[type="range"] {
   padding: 2rem;
   position: relative;
 }
+
 .modal form > .close {
   position: absolute;
   font-size: 1.5em;
@@ -182,14 +193,17 @@ input[type="range"] {
   color: #777;
   cursor: pointer;
 }
+
 .modal form input {
   margin: 0.5rem 0;
   padding: 0.5em;
   border: none;
 }
+
 .modal input[type="radio"] + input[type="text"] {
   width: calc(100% - 1.35em);
 }
+
 input[type="range"] {
   max-width: 200px;
 }

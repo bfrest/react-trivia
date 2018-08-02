@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import "./App.css";
 import "./reset.css";
 import axios from "axios";
+import gear from "./gear.svg";
 
 class App extends Component {
   constructor() {
@@ -23,6 +24,7 @@ class App extends Component {
 
   handleNextPage() {
     // loads the next page of questions
+    //! Make the next page load dynamic so if there are more than two pages, it will load all of them
     axios.get("http://practiceapi.devmountain.com/api/trivia/questions?page=1").then(res => this.setState({ questions: [...res.data] }));
   }
 
@@ -39,14 +41,12 @@ class App extends Component {
 
     // removes the class current from all options then adds the class to the one clicked on
     for (let i = 0; i < allOptions.length; i++) {
-      if (allOptions[i].classList.contains("current")) {
-        allOptions[i].classList.remove("current");
-      }
+      allOptions[i].classList.remove("current");
       currentOption.classList.add("current");
     }
 
     if (currentlySelected === answer) {
-      // changes the color on the whole div
+      // changes the background color on the whole div
       questionWrapper.classList.remove("incorrect");
       questionWrapper.classList.add("correct");
     } else {
@@ -71,19 +71,31 @@ class App extends Component {
 
   handleFilter(e) {
     const { questions, filteredList, filter } = this.state;
-    let word = e.target.value;
+    let wordToFilter = e.target.value;
     this.setState({ filter: e.target.value });
 
-    for (let i = 0; i < questions.length; i++) {
-      if (
-        questions[i].options[1].toLowerCase().includes(word) ||
-        questions[i].options[2].toLowerCase().includes(word) ||
-        questions[i].options[3].toLowerCase().includes(word) ||
-        questions[i].options[4].toLowerCase().includes(word)
-      ) {
-        filteredList.push(questions[i]);
+    if (wordToFilter === "") {
+      this.setState({ questions: [], filteredList: [] });
+      this.getAllQuestions();
+    } else {
+      for (let i = 0; i < questions.length; i++) {
+        if (questions[i].options[(1, 2, 3, 4)].toLowerCase().includes(wordToFilter)) {
+          filteredList.push(questions[i]);
+        }
       }
     }
+  }
+
+  openModal() {
+    let modal = document.querySelector(".modal");
+
+    modal.classList.add("openModal");
+  }
+
+  closeModal() {
+    let modal = document.querySelector(".modal");
+
+    modal.classList.remove("openModal");
   }
 
   render() {
@@ -122,7 +134,7 @@ class App extends Component {
             return (
               <div key={question._id} className={`question-wrapper s${question._id}`}>
                 <h3>{question.question}</h3>
-
+                <img className="gear" src={gear} alt="gear" onClick={() => this.openModal()} />
                 <p className="difficulty">{question.difficulty}</p>
                 <ul>
                   {/* on each of the list items I added an s on the front of the class to be able to apply styles to it */}
@@ -158,7 +170,9 @@ class App extends Component {
 
         <div className="modal">
           <form>
-            <h4 className="close">X</h4>
+            <h4 className="close" onClick={() => this.closeModal()}>
+              X
+            </h4>
             <span>Question</span>
             <input type="text" ng-model="<!-- Question -->" />
             <span>Animal it's about</span>
